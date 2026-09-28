@@ -3,7 +3,7 @@ import type { Building } from '@/types'
 export const buildings: Building[] = [
   {
     id: 'b1',
-    name: 'Harbor Point Tower',
+    name: 'Harborview Tower',
     type: 'office',
     city: 'Boston',
     occupancy: 842,
