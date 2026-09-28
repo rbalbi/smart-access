@@ -6,10 +6,12 @@ import { router } from './router'
 
 export function App() {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    // Dark only for now; the tokens in index.css are structured so a light
+    // theme can be added later without touching components.
+    <ThemeProvider attribute="class" forcedTheme="dark">
       <TooltipProvider>
         <RouterProvider router={router} />
-        <Toaster />
+        <Toaster position="bottom-left" />
       </TooltipProvider>
     </ThemeProvider>
   )
