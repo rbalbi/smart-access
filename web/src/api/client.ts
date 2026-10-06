@@ -4,6 +4,7 @@ import type {
   Building,
   ConsoleSnapshot,
   ExceptionItem,
+  PeopleSnapshot,
   Site,
 } from '@/types'
 
@@ -36,6 +37,7 @@ export const api = {
   buildings: () => get<Building[]>('/buildings'),
   sites: () => get<Pick<Site, 'id' | 'name' | 'address'>[]>('/sites'),
   console: (siteId: string) => get<ConsoleSnapshot>(`/sites/${siteId}/console`),
+  people: (siteId: string) => get<PeopleSnapshot>(`/sites/${siteId}/people`),
   recordAudit: (entry: AuditEntry) => post('/audit', entry),
 
   /**

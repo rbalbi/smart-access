@@ -21,6 +21,7 @@
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-text: var(--brand-text);
   --color-brand-soft: var(--brand-soft);
+  --color-brand-strong: var(--brand-strong);
   --color-sev-critical: var(--sev-critical);
   --color-sev-critical-bg: var(--sev-critical-bg);
   --color-sev-critical-fg: var(--sev-critical-fg);
@@ -95,6 +96,7 @@
   --brand-foreground: #0a0012;
   --brand-text: #c4b5fd;
   --brand-soft: #ede9fe;
+  --brand-strong: #7c3aed; /* selected avatar, medium review badge */
 
   --sev-critical: #ef4444;
   --sev-critical-bg: #3b1111;

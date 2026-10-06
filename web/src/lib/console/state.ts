@@ -101,6 +101,8 @@ export type ConsoleAction =
   | { type: 'set-stream-filter'; stream: Partial<ConsoleState['stream']> }
   | { type: 'set-search'; search: string }
   | { type: 'select-event'; eventId: string | null }
+  /** A change made on another screen (e.g. People) that belongs in the trail. */
+  | { type: 'log'; summary: string; targetId?: string; at: string }
 
 export function initialState(
   snapshot: ConsoleSnapshot,
@@ -350,6 +352,16 @@ export function reducer(
           e.id === action.exceptionId ? { ...e, status: 'resolved' } : e,
         ),
       }
+    }
+
+    case 'log': {
+      const [audited] = withAudit(state, {
+        at: action.at,
+        actor: state.actor,
+        summary: action.summary,
+        targetId: action.targetId,
+      })
+      return audited
     }
 
     case 'reveal-name': {

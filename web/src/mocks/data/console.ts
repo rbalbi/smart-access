@@ -38,7 +38,7 @@ const doorNames = [
   'Parking P1 gate',
 ]
 
-function buildDoors(): Door[] {
+export function buildDoors(): Door[] {
   const doors: Door[] = doorNames.map((name, i) => ({
     id: `door-${i + 1}`,
     name,

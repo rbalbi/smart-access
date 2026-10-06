@@ -38,6 +38,16 @@ export function formatDateTime(iso: string, timeZone: string) {
   }).format(new Date(iso))
 }
 
+/** "Oct 5, 2026". */
+export function formatDate(iso: string, timeZone: string) {
+  return new Intl.DateTimeFormat(LOCALE, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone,
+  }).format(new Date(iso))
+}
+
 export function isSameSiteDay(a: string, b: string, timeZone: string) {
   const day = (iso: string) =>
     new Intl.DateTimeFormat('en-CA', { timeZone }).format(new Date(iso))

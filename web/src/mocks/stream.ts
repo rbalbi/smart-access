@@ -3,7 +3,7 @@ import type { AccessEvent, ExceptionItem, Person } from '@/types'
 // Generates plausible live traffic for the demo. Deterministic when given a
 // seeded random function, so tests can rely on it.
 
-type Rng = () => number
+export type Rng = () => number
 
 export function seededRng(seed: number): Rng {
   let s = seed >>> 0

@@ -170,3 +170,120 @@ export type AuditEntry = {
 }
 
 export type ConnectionState = 'live' | 'lost'
+
+// ---------- People & Credentials ----------
+
+export type PersonType = 'tenant' | 'staff' | 'contractor'
+
+export type CredentialStatus = 'active' | 'expired' | 'suspended' | 'revoked'
+
+export type IssuedCredential = Credential & {
+  id: string
+  status: CredentialStatus
+  /** "Apple Wallet (iPhone 15 Pro)", "HID iCLASS SE". */
+  device?: string
+  issuedAt: string
+  /** Issued by a roster sync or a rule, rather than by a person. */
+  autoProvisioned: boolean
+  expiresAt?: string
+  lastTap?: { at: string; location: string }
+}
+
+export type AccessGroup = {
+  id: string
+  name: string
+  /** Server rooms, security operations: Security role only. */
+  restricted: boolean
+  /** Master or all-doors groups, flagged in the directory. */
+  elevated?: boolean
+  schedule: string
+  doorIds: string[]
+}
+
+export type LastAccess = {
+  at: string
+  /** Absent for administrative entries ("Manual hold by HR"). */
+  outcome?: 'admitted' | 'denied'
+  location: string
+}
+
+export type DirectoryPerson = {
+  /** "PER-008812". */
+  id: string
+  person: Person
+  /** Show "Tanaka Yuki" rather than "Yuki Tanaka". */
+  familyNameFirst?: boolean
+  type: PersonType
+  email: string
+  phone: string
+  /** Contractors: the tenant or team that vouches for them. */
+  sponsor?: string
+  source: 'roster' | 'manual'
+  /** "SCIM Roster Integration · Tenant ID: KST-9044". */
+  sourceDetail: string
+  syncedAt: string
+  credentials: IssuedCredential[]
+  groupIds: string[]
+  /** A contractor's end date extension waiting on Security. */
+  extensionRequested?: boolean
+  lastAccess?: LastAccess
+  /** Open Live Activity exception about this person. */
+  exceptionId?: string
+}
+
+export type ReviewKind =
+  | 'access-extension'
+  | 'roster-mismatch'
+  | 'possible-duplicate'
+  | 'mobile-not-activated'
+  | 'stale-suspension'
+
+export type ReviewAction = {
+  id: string
+  label: string
+  tone: 'secondary' | 'outline'
+  /** Removes access, so it asks for confirmation first. */
+  removesAccess?: boolean
+}
+
+export type ReviewItem = {
+  id: string
+  kind: ReviewKind
+  severity: Exclude<Severity, 'critical'>
+  personId: string
+  /** Shown instead of the person's name, e.g. both duplicate spellings. */
+  title?: string
+  /** "Contractor · Castellan Insurance". */
+  context: string
+  detail: string
+  createdAt: string
+  /** Security-classified: Operations sees a masked summary only. */
+  classified: boolean
+  maskedDetail?: string
+  requestId?: string
+  exceptionId?: string
+  /** Link text for the exception, e.g. "3 denied attempts today". */
+  exceptionNote?: string
+  actions: ReviewAction[]
+}
+
+export type RosterSync = {
+  tenant: string
+  syncedAt: string
+  ok: boolean
+  people: number
+}
+
+export type PeopleSnapshot = {
+  people: DirectoryPerson[]
+  review: ReviewItem[]
+  groups: AccessGroup[]
+  rosters: RosterSync[]
+  /** Credential changes made without a person, last 7 days. */
+  automation: {
+    issued: number
+    revokedOnOffboarding: number
+    expiredOnSchedule: number
+    neededPerson: number
+  }
+}
