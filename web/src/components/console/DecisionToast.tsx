@@ -27,7 +27,10 @@ export function DecisionToast({
           <Check aria-hidden className="size-3.5" />
         </span>
         <div className="min-w-0">
-          <p className="truncate text-xs leading-4 font-semibold" title={title}>
+          <p
+            className="line-clamp-2 text-xs leading-4 font-semibold"
+            title={title}
+          >
             {title}
           </p>
           <p className="font-mono text-[11px] leading-4 text-subtle-foreground">

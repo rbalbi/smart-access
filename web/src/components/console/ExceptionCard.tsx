@@ -206,7 +206,7 @@ function FullCard({
               {item.reasoning.routedBecause}
             </p>
           )}
-          {role === 'security' && item.cameraId && (
+          {role === 'security' && !privacy && item.cameraId && (
             <CameraStill id={item.cameraId} />
           )}
         </CollapsibleContent>

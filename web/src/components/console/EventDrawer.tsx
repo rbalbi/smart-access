@@ -176,7 +176,7 @@ function DrawerBody({
                   </p>
                   <p className="text-[11px] leading-4 text-muted-foreground">
                     {person
-                      ? [person.roleLabel, !state.privacy && person.org]
+                      ? [person.roleLabel, person.org]
                           .filter(Boolean)
                           .join(' · ')
                       : event.context}
@@ -254,7 +254,7 @@ function DrawerBody({
               title="Sensor readings"
               mask={mask}
             />
-            {state.role === 'security' && event.cameraId && (
+            {state.role === 'security' && !state.privacy && event.cameraId && (
               <figure className="flex aspect-video max-h-36 flex-col items-center justify-center gap-1 rounded border border-dashed border-border bg-surface-0 text-muted-foreground">
                 <Camera aria-hidden className="size-5" />
                 <figcaption className="font-mono text-[11px]">

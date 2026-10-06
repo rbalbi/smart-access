@@ -11,7 +11,8 @@ export function App() {
     <ThemeProvider attribute="class" forcedTheme="dark">
       <TooltipProvider>
         <RouterProvider router={router} />
-        <Toaster position="bottom-left" />
+        {/* Clear of the sidebar (256px) and the shortcut footer. */}
+        <Toaster position="bottom-left" offset={{ left: 272, bottom: 48 }} />
       </TooltipProvider>
     </ThemeProvider>
   )

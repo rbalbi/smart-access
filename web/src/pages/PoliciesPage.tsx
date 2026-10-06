@@ -1,11 +1,10 @@
-import { PageHeader } from '@/components/PageHeader'
+import { PlaceholderPage } from '@/components/PlaceholderPage'
 
-// Placeholder: replaced once the dashboard design is in.
 export function PoliciesPage() {
   return (
-    <PageHeader
-      title="Policies"
-      description="Centralized security policy management"
+    <PlaceholderPage
+      title="Access Policy & Autonomy"
+      description="Centralized access rules and how much the system may decide on its own"
     />
   )
 }

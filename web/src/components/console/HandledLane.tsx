@@ -37,7 +37,7 @@ export function HandledLane({ className }: { className?: string }) {
       aria-labelledby="handled-heading"
       className={cn('flex flex-col rounded-xl bg-surface-2', className)}
     >
-      <header className="sticky top-14 z-10 flex flex-col gap-2 rounded-t-xl bg-surface-2/95 px-4 pt-4 pb-3 backdrop-blur-sm">
+      <header className="sticky top-[var(--console-top,3.5rem)] z-10 flex flex-col gap-2 rounded-t-xl bg-surface-2/95 px-4 pt-4 pb-3 backdrop-blur-sm">
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
           <div className="flex items-center gap-2">
             <h2
@@ -170,11 +170,8 @@ function EventRow({
         revealed: state.revealed.includes(event.id),
       })
     : event.headline
-  const context = event.subject
-    ? state.privacy
-      ? undefined
-      : event.subject.org
-    : event.context
+  // Privacy mode shows role and tenant, never the name.
+  const context = event.subject ? event.subject.org : event.context
   const where = [
     event.location,
     event.credential && formatCredential(event.credential),
@@ -200,7 +197,7 @@ function EventRow({
           : 'hover:bg-surface-5/50',
       )}
     >
-      <span className="flex min-w-0 items-center gap-2.5">
+      <span className="flex min-w-0 items-center gap-2">
         <time
           dateTime={event.occurredAt}
           className={cn(
@@ -212,18 +209,24 @@ function EventRow({
         </time>
         <OutcomeBadge outcome={event.outcome} />
         <span className="flex min-w-0 flex-col">
-          <span className="truncate text-xs leading-4">
+          <span
+            className="truncate text-xs leading-4"
+            title={[who, context].filter(Boolean).join(' · ')}
+          >
             {who}
             {context && (
               <span className="text-subtle-foreground"> · {context}</span>
             )}
           </span>
-          <span className="truncate font-mono text-[11px] leading-4 text-subtle-foreground">
+          <span
+            className="truncate font-mono text-[11px] leading-4 text-subtle-foreground"
+            title={where}
+          >
             {where}
           </span>
         </span>
       </span>
-      <span className="flex shrink-0 items-center gap-2">
+      <span className="flex shrink-0 items-center gap-1.5">
         {(revoked || flagged || event.recordedOffline) && (
           <span className="flex flex-col items-end gap-0.5">
             {revoked && (
@@ -241,7 +244,10 @@ function EventRow({
             )}
           </span>
         )}
-        <span className="flex max-w-28 flex-col items-end text-right">
+        <span
+          className="flex max-w-20 flex-col items-end text-right"
+          title={event.reasoning.policy}
+        >
           {event.reasoning.confidence === null ? (
             <span className="text-[11px] leading-4 text-muted-foreground">
               Rule-based

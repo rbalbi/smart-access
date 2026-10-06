@@ -114,7 +114,7 @@
   --warn: #fbbf24;
 
   /* shadcn roles mapped onto the palette */
-  --background: var(--surface-2);
+  --background: var(--surface-1);
   --foreground: #fafafa;
   --card: var(--surface-3);
   --card-foreground: #fafafa;

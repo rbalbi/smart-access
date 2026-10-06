@@ -1,22 +1,24 @@
 import { createBrowserRouter } from 'react-router'
 import { AppLayout } from '@/layouts/AppLayout'
-import { AccessLogPage } from '@/pages/AccessLogPage'
-import { AlertsPage } from '@/pages/AlertsPage'
-import { BuildingsPage } from '@/pages/BuildingsPage'
-import { DashboardPage } from '@/pages/DashboardPage'
+import { AuditLogPage } from '@/pages/AuditLogPage'
+import { DoorsPage } from '@/pages/DoorsPage'
+import { LiveActivityPage } from '@/pages/LiveActivityPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import { PeoplePage } from '@/pages/PeoplePage'
 import { PoliciesPage } from '@/pages/PoliciesPage'
+import { VisitorsPage } from '@/pages/VisitorsPage'
 
 export const routes = [
   {
     path: '/',
     element: <AppLayout />,
     children: [
-      { index: true, element: <DashboardPage /> },
-      { path: 'buildings', element: <BuildingsPage /> },
-      { path: 'access-log', element: <AccessLogPage /> },
+      { index: true, element: <LiveActivityPage /> },
+      { path: 'people', element: <PeoplePage /> },
+      { path: 'visitors', element: <VisitorsPage /> },
+      { path: 'doors', element: <DoorsPage /> },
       { path: 'policies', element: <PoliciesPage /> },
-      { path: 'alerts', element: <AlertsPage /> },
+      { path: 'audit-log', element: <AuditLogPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

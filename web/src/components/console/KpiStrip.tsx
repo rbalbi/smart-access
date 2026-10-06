@@ -34,8 +34,8 @@ function KpiCard({
         className,
       )}
     >
-      <div className="flex items-start justify-between gap-2">
-        <h2 className="text-[11px] leading-4 font-medium tracking-[0.05em] text-muted-foreground uppercase">
+      <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1">
+        <h2 className="text-[11px] leading-4 font-medium tracking-[0.05em] whitespace-nowrap text-muted-foreground uppercase">
           {label}
         </h2>
         {aside}
@@ -227,8 +227,8 @@ export function KpiStrip() {
               for human reviews
             </span>
           </div>
-          <div className="flex items-center justify-between gap-2 text-xs">
-            <span className="text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs">
+            <span className="whitespace-nowrap text-muted-foreground">
               7-day baseline:{' '}
               <span className="font-mono whitespace-nowrap text-foreground">
                 {formatDuration(k.baselineSeconds)}

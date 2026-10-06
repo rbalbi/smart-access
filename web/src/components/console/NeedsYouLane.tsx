@@ -59,7 +59,9 @@ export function NeedsYouLane({ className }: { className?: string }) {
   const [whyOpen, setWhyOpen] = useState<Record<string, boolean>>({})
   const isWhyOpen = (e: ExceptionItem) =>
     whyOpen[e.id] ?? e.severity === 'critical'
-  const anyWhyOpen = items.some(isWhyOpen)
+  // Only reasoning the person opened counts as "working"; critical cards
+  // start open without pausing the stream.
+  const anyWhyOpen = items.some((e) => whyOpen[e.id] === true)
   useEffect(() => {
     dispatch({ type: 'auto-pause', reason: 'why-open', active: anyWhyOpen })
   }, [anyWhyOpen, dispatch])
@@ -153,7 +155,7 @@ export function NeedsYouLane({ className }: { className?: string }) {
         syncLanePause()
       }}
     >
-      <header className="sticky top-14 z-10 flex flex-col gap-0.5 rounded-t-xl bg-surface-2/95 px-4 pt-4 pb-3 backdrop-blur-sm">
+      <header className="sticky top-[var(--console-top,3.5rem)] z-10 flex flex-col gap-0.5 rounded-t-xl bg-surface-2/95 px-4 pt-4 pb-3 backdrop-blur-sm">
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
           <div className="flex items-center gap-2.5">
             <h2
