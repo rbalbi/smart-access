@@ -11,7 +11,7 @@ import {
 import { useConsole } from '@/hooks/useConsole'
 import { useNow } from '@/hooks/useNow'
 import type { ExceptionAction } from '@/lib/console/actions'
-import { displayName } from '@/lib/console/format'
+import { displayName, nowIso } from '@/lib/console/format'
 import {
   chipCounts,
   isPaused,
@@ -97,7 +97,7 @@ export function NeedsYouLane({ className }: { className?: string }) {
     const index = items.findIndex((e) => e.id === item.id)
     const next = items[index + 1] ?? items[index - 1]
     focusAfter.current = next?.id ?? ''
-    const at = new Date().toISOString()
+    const at = nowIso()
     dispatch({
       type: 'decide',
       exceptionId: item.id,
@@ -117,7 +117,7 @@ export function NeedsYouLane({ className }: { className?: string }) {
         Date.parse(at) + REVERSE_WINDOW_MS,
       ).toISOString(),
       onReverse: () => {
-        dispatch({ type: 'reverse', auditId, at: new Date().toISOString() })
+        dispatch({ type: 'reverse', auditId, at: nowIso() })
         announce(`Reversed: ${action.pastTense}. The exception is open again.`)
       },
     })
@@ -287,7 +287,7 @@ export function NeedsYouLane({ className }: { className?: string }) {
               dispatch({
                 type: 'assign-to-me',
                 exceptionId: item.id,
-                at: new Date().toISOString(),
+                at: nowIso(),
               })
             }
             onAddNote={(note) => {
@@ -295,7 +295,7 @@ export function NeedsYouLane({ className }: { className?: string }) {
                 type: 'add-note',
                 exceptionId: item.id,
                 note,
-                at: new Date().toISOString(),
+                at: nowIso(),
               })
               announce('Note added to the audit trail.')
             }}

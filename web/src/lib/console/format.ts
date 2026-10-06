@@ -5,6 +5,9 @@ import type { Credential, CredentialKind, Person } from '@/types'
 
 const LOCALE = undefined // the viewer's locale
 
+/** Timestamp for actions taken from event handlers. */
+export const nowIso = () => new Date().toISOString()
+
 export function formatTime(
   iso: string,
   timeZone: string,

@@ -8,7 +8,7 @@ import {
   ThumbsUp,
   X,
 } from 'lucide-react'
-import { useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import {
   Select,
   SelectContent,
@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useConsole } from '@/hooks/useConsole'
+import { useNow } from '@/hooks/useNow'
 import { overrideReasons } from '@/lib/console/actions'
 import {
   displayName,
@@ -25,6 +26,7 @@ import {
   formatTime,
   initials,
   maskFreeText,
+  nowIso,
   timeZoneAbbr,
 } from '@/lib/console/format'
 import { nextAuditId } from '@/lib/console/state'
@@ -76,14 +78,15 @@ function DrawerBody({
   const feedback = state.feedback[event.id]
   const disabled = state.connection === 'lost'
   const mask = (text: string) => maskFreeText(text, state.privacy)
+  const now = useNow(30_000)
 
-  const close = () => {
+  const close = useCallback(() => {
     dispatch({ type: 'select-event', eventId: null })
     // Return focus to the row that opened the drawer.
     requestAnimationFrame(() =>
       document.getElementById(`event-${event.id}`)?.focus(),
     )
-  }
+  }, [dispatch, event.id])
 
   useEffect(() => {
     closeRef.current?.focus()
@@ -92,11 +95,10 @@ function DrawerBody({
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-    // Bind once per opened event; close() only depends on event.id.
-  }, [event.id])
+  }, [close])
 
   const override = (kind: 'revoke' | 'flag') => {
-    const at = new Date().toISOString()
+    const at = nowIso()
     const auditId = nextAuditId(state, at)
     dispatch({
       type: 'override-event',
@@ -196,7 +198,7 @@ function DrawerBody({
                     type: 'reveal-name',
                     targetId: event.id,
                     name,
-                    at: new Date().toISOString(),
+                    at: nowIso(),
                   })
                 }
                 className="flex w-fit items-center gap-1 text-[11px] text-brand underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring disabled:text-subtle-foreground disabled:no-underline"
@@ -297,7 +299,7 @@ function DrawerBody({
                     entry.emphasis === 'override' && 'text-sev-high-fg',
                   )}
                 >
-                  {formatRelativeDay(entry.at, new Date().toISOString(), tz)}
+                  {formatRelativeDay(entry.at, now, tz)}
                 </time>
                 <p
                   className={cn(
@@ -419,7 +421,7 @@ function DrawerBody({
                       type: 'feedback',
                       eventId: event.id,
                       value,
-                      at: new Date().toISOString(),
+                      at: nowIso(),
                     })
                   }
                 >

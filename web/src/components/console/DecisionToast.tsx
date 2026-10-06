@@ -50,13 +50,15 @@ export function DecisionToast({
   )
 }
 
+function secondsUntil(iso?: string) {
+  return iso ? Math.max(0, Math.ceil((Date.parse(iso) - Date.now()) / 1000)) : 0
+}
+
 function useSecondsUntil(iso?: string) {
-  const calc = () =>
-    iso ? Math.max(0, Math.ceil((Date.parse(iso) - Date.now()) / 1000)) : 0
-  const [seconds, setSeconds] = useState(calc)
+  const [seconds, setSeconds] = useState(() => secondsUntil(iso))
   useEffect(() => {
     if (!iso) return
-    const id = setInterval(() => setSeconds(calc()), 250)
+    const id = setInterval(() => setSeconds(secondsUntil(iso)), 250)
     return () => clearInterval(id)
   }, [iso])
   return seconds
