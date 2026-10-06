@@ -314,6 +314,29 @@ describe('filters', () => {
   })
 })
 
+describe('top-bar search', () => {
+  it('narrows both lanes', () => {
+    const s = reducer(fresh(), { type: 'set-search', search: 'dock 3' })
+    expect(visibleExceptions(s).map((e) => e.id)).toEqual(['EXC-4469'])
+    expect(visibleEvents(s).map((e) => e.id)).toEqual(['EVT-00412'])
+    expect(chipCounts(s).all).toBe(1)
+  })
+
+  it('does not reveal classified details to Operations', () => {
+    const ops = reducer(fresh(), { type: 'set-search', search: 'volkov' })
+    expect(visibleExceptions(ops)).toHaveLength(0)
+    const sec = reducer(
+      reducer(ops, {
+        type: 'set-role',
+        role: 'security',
+        actor: 'David Okafor',
+      }),
+      { type: 'set-search', search: 'volkov' },
+    )
+    expect(visibleExceptions(sec).map((e) => e.id)).toEqual(['EXC-4466'])
+  })
+})
+
 describe('roles', () => {
   it('Operations escalates to Security; Security opens an incident', () => {
     expect(actionsFor('tailgating', 'operations').at(-1)?.label).toBe(

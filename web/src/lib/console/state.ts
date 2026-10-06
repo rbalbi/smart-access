@@ -61,6 +61,8 @@ export type ConsoleState = {
     assignedToMe: boolean
   }
   stream: { outcome: OutcomeFilter; query: string }
+  /** Top-bar search; narrows both lanes. */
+  search: string
   selectedEventId: string | null
   /** Items closed by someone else while this viewer was looking. */
   resolvedElsewhere: string[]
@@ -97,6 +99,7 @@ export type ConsoleAction =
   | { type: 'set-connection'; connection: ConnectionState; at: string }
   | { type: 'set-filter'; filters: Partial<ConsoleState['filters']> }
   | { type: 'set-stream-filter'; stream: Partial<ConsoleState['stream']> }
+  | { type: 'set-search'; search: string }
   | { type: 'select-event'; eventId: string | null }
 
 export function initialState(
@@ -129,6 +132,7 @@ export function initialState(
     baselineResolutionSeconds: snapshot.baselineResolutionSeconds,
     filters: { severity: 'all', type: 'all', assignedToMe: false },
     stream: { outcome: 'all', query: '' },
+    search: '',
     selectedEventId: null,
     resolvedElsewhere: [],
   }
@@ -397,6 +401,9 @@ export function reducer(
     case 'set-stream-filter':
       return { ...state, stream: { ...state.stream, ...action.stream } }
 
+    case 'set-search':
+      return { ...state, search: action.search }
+
     case 'select-event':
       return { ...state, selectedEventId: action.eventId }
   }
@@ -450,25 +457,52 @@ export function severityCounts(state: ConsoleState) {
   return counts
 }
 
-/** Exceptions after the lane filters; counts in the chips use the same base. */
-export function visibleExceptions(state: ConsoleState) {
-  const { severity, type, assignedToMe } = state.filters
+function includesText(fields: (string | undefined)[], q: string) {
+  return fields.filter(Boolean).join(' ').toLowerCase().includes(q)
+}
+
+/** Search never matches hidden details of classified items for Operations. */
+function matchesSearch(e: ExceptionItem, state: ConsoleState) {
+  const q = state.search.trim().toLowerCase()
+  if (!q) return true
+  if (e.classified && state.role !== 'security')
+    return includesText([e.location], q)
+  return includesText(
+    [
+      e.title,
+      e.location,
+      e.summary,
+      e.subject?.givenName,
+      e.subject?.familyName,
+      e.subject?.org,
+      e.visitor?.host,
+    ],
+    q,
+  )
+}
+
+/** Open exceptions after every filter except severity. */
+function filteredBase(state: ConsoleState) {
+  const { type, assignedToMe } = state.filters
   return openExceptions(state).filter(
     (e) =>
-      (severity === 'all' || e.severity === severity) &&
       (type === 'all' || e.type === type) &&
-      (!assignedToMe || e.assignee === state.actor),
+      (!assignedToMe || e.assignee === state.actor) &&
+      matchesSearch(e, state),
+  )
+}
+
+/** Exceptions after the lane filters; counts in the chips use the same base. */
+export function visibleExceptions(state: ConsoleState) {
+  const { severity } = state.filters
+  return filteredBase(state).filter(
+    (e) => severity === 'all' || e.severity === severity,
   )
 }
 
 /** Counts per severity with the non-severity filters applied. */
 export function chipCounts(state: ConsoleState) {
-  const { type, assignedToMe } = state.filters
-  const base = openExceptions(state).filter(
-    (e) =>
-      (type === 'all' || e.type === type) &&
-      (!assignedToMe || e.assignee === state.actor),
-  )
+  const base = filteredBase(state)
   const counts: Record<SeverityFilter, number> = {
     all: base.length,
     critical: 0,
@@ -487,13 +521,14 @@ const outcomeGroups: Record<Exclude<OutcomeFilter, 'all'>, AccessOutcome[]> = {
 }
 
 export function visibleEvents(state: ConsoleState) {
-  const { outcome, query } = state.stream
-  const q = query.trim().toLowerCase()
+  const { outcome } = state.stream
+  const queries = [state.stream.query, state.search]
+    .map((q) => q.trim().toLowerCase())
+    .filter(Boolean)
   return state.events.filter((e) => {
     if (outcome !== 'all' && !outcomeGroups[outcome].includes(e.outcome))
       return false
-    if (!q) return true
-    const haystack = [
+    const fields = [
       e.location,
       e.headline,
       e.context,
@@ -502,10 +537,7 @@ export function visibleEvents(state: ConsoleState) {
       e.subject?.org,
       e.reasoning.policy,
     ]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase()
-    return haystack.includes(q)
+    return queries.every((q) => includesText(fields, q))
   })
 }
 
