@@ -142,7 +142,8 @@ export function isPaused(state: ConsoleState) {
   return state.manualPause || state.autoPause.length > 0
 }
 
-function auditId(state: ConsoleState, at: string) {
+/** The ID the next audit entry will get, e.g. AUD-0928-000982. */
+export function nextAuditId(state: ConsoleState, at: string) {
   const mmdd = `${at.slice(5, 7)}${at.slice(8, 10)}`
   return `AUD-${mmdd}-${String(state.auditSeq + 1).padStart(6, '0')}`
 }
@@ -151,7 +152,7 @@ function withAudit(
   state: ConsoleState,
   entry: Omit<AuditEntry, 'id'>,
 ): [ConsoleState, string] {
-  const id = auditId(state, entry.at)
+  const id = nextAuditId(state, entry.at)
   return [
     {
       ...state,
